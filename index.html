@@ -1,24 +1,145 @@
-<div class="card">
-    <h2>🌍 Карта населения мира</h2>
-    <div class="map-placeholder" style="background: linear-gradient(135deg, #1e3c72, #2a5298); color: white;">
-        <div style="text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 20px;">🗺️</div>
-            <h3>Интерактивная карта мирового населения</h3>
-            <p>Год: <strong>2026</strong> | Всего: <strong>8.23 млрд</strong></p>
-            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
-                <div style="text-align: center;">
-                    <div style="background: #ff6b6b; width: 20px; height: 20px; border-radius: 50%; margin: 0 auto;"></div>
-                    <small>Высокая плотность</small>
-                </div>
-                <div style="text-align: center;">
-                    <div style="background: #4ecdc4; width: 20px; height: 20px; border-radius: 50%; margin: 0 auto;"></div>
-                    <small>Средняя плотность</small>
-                </div>
-                <div style="text-align: center;">
-                    <div style="background: #45b7d1; width: 20px; height: 20px; border-radius: 50%; margin: 0 auto;"></div>
-                    <small>Низкая плотность</small>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Динамика численности населения мира</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        /* ... остальные стили остаются такими же ... */
+        
+        .map-container {
+            height: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ... остальная часть header и controls без изменений ... -->
+        
+        <div class="dashboard">
+            <!-- ПЕРВЫЙ БЛОК С КАРТОЙ -->
+            <div class="card">
+                <h2>🌍 Карта населения мира</h2>
+                <div id="worldMap" class="map-container"></div>
+                <div style="text-align: center; margin-top: 10px; font-size: 0.9rem;">
+                    Год: <strong id="mapYear">2026</strong> | 
+                    Режим: <strong id="mapMode">Плотность населения</strong>
                 </div>
             </div>
+            
+            <!-- ... остальные блоки без изменений ... -->
         </div>
+        
+        <!-- ... остальная часть без изменений ... -->
     </div>
-</div>
+
+    <script>
+        // ... остальной JavaScript код ...
+
+        // Инициализация карты мира
+        function initializeWorldMap() {
+            const mapChart = echarts.init(document.getElementById('worldMap'));
+            
+            // Данные для карты (примерные)
+            const populationMapData = [
+                {name: 'Китай', value: 1412},
+                {name: 'Индия', value: 1480},
+                {name: 'США', value: 345},
+                {name: 'Индонезия', value: 285},
+                {name: 'Пакистан', value: 250},
+                {name: 'Бразилия', value: 225},
+                {name: 'Нигерия', value: 235},
+                {name: 'Бангладеш', value: 180},
+                {name: 'Россия', value: 143},
+                {name: 'Мексика', value: 132},
+                {name: 'Япония', value: 125},
+                {name: 'Эфиопия', value: 126},
+                {name: 'Филиппины', value: 117},
+                {name: 'Египет', value: 112},
+                {name: 'Вьетнам', value: 98},
+                {name: 'ДР Конго', value: 102},
+                {name: 'Турция', value: 85},
+                {name: 'Иран', value: 89},
+                {name: 'Германия', value: 83},
+                {name: 'Таиланд', value: 71}
+            ];
+
+            const mapOption = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br/>Население: {c} млн'
+                },
+                visualMap: {
+                    min: 0,
+                    max: 1500,
+                    text: ['Высокая плотность', 'Низкая плотность'],
+                    realtime: false,
+                    calculable: true,
+                    inRange: {
+                        color: ['#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027']
+                    }
+                },
+                series: [{
+                    name: 'Население',
+                    type: 'map',
+                    map: 'world',
+                    roam: true,
+                    emphasis: {
+                        label: {
+                            show: true
+                        }
+                    },
+                    data: populationMapData,
+                    nameMap: {
+                        'China': 'Китай',
+                        'India': 'Индия',
+                        'United States': 'США',
+                        'Indonesia': 'Индонезия',
+                        'Pakistan': 'Пакистан',
+                        'Brazil': 'Бразилия',
+                        'Nigeria': 'Нигерия',
+                        'Bangladesh': 'Бангладеш',
+                        'Russia': 'Россия',
+                        'Mexico': 'Мексика',
+                        'Japan': 'Япония'
+                    }
+                }]
+            };
+
+            mapChart.setOption(mapOption);
+
+            // Адаптация размера при ресайзе
+            window.addEventListener('resize', function() {
+                mapChart.resize();
+            });
+        }
+
+        // В функции updateCharts добавляем обновление карты
+        function updateCharts() {
+            const selectedYear = document.getElementById('yearSelect').value;
+            const selectedRegion = document.getElementById('regionSelect').value;
+            const regionText = document.getElementById('regionSelect').options[document.getElementById('regionSelect').selectedIndex].text;
+
+            // Обновляем карту
+            document.getElementById('mapYear').textContent = selectedYear;
+            document.getElementById('mapMode').textContent = regionText === 'Все регионы' ? 'Плотность населения' : regionText;
+
+            // ... остальной код updateCharts без изменений ...
+        }
+
+        // В DOMContentLoaded добавляем инициализацию карты
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            initializeWorldMap(); // ← ДОБАВИТЬ ЭТУ СТРОЧКУ!
+            
+            // ... остальной код без изменений ...
+        });
+    </script>
+</body>
+</html>
